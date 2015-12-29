@@ -8,7 +8,8 @@
 from scrapy import Item, Field
 
 
-class Article(Item):
+class ArticleG1(Item):
+    url = Field()
     titulo = Field()
     subtitulo = Field()
     data_publicado = Field()

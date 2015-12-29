@@ -16,6 +16,8 @@ NEWSPIDER_MODULE = 'news_crawler.spiders'
 
 LOG_LEVEL = 'ERROR'
 
+DOWNLOAD_DELAY = 5
+
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'news_crawler (+http://www.yourdomain.com)'
@@ -63,9 +65,16 @@ LOG_LEVEL = 'ERROR'
 
 # Configure item pipelines
 # See http://scrapy.readthedocs.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'news_crawler.pipelines.SomePipeline': 300,
-#}
+ITEM_PIPELINES = {
+   'news_crawler.pipelines.MongoPipeline': 300,
+}
+
+
+MONGO_URI = "localhost"
+MONGODB_PORT = 27017
+MONGO_DATABASE = "articles_news"
+MONGODB_COLLECTION = "articles"
+
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See http://doc.scrapy.org/en/latest/topics/autothrottle.html
