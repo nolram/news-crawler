@@ -16,7 +16,7 @@ NEWSPIDER_MODULE = 'news_crawler.spiders'
 
 LOG_LEVEL = 'ERROR'
 
-DOWNLOAD_DELAY = 5
+#DOWNLOAD_DELAY = 3
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
