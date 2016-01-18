@@ -12,6 +12,6 @@ O arquivo nltk_classificador.py contém um script que aprende com os títulos e 
 
 ##
 Comando para rodar o script.
-''' shell
+```shell
 scrapy crawl articleg1
-'''
+```
