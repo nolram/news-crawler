@@ -9,6 +9,7 @@ O arquivo nltk_classificador.py contém um script que aprende com os títulos e 
 * MongoDB - https://www.mongodb.org/
 * PyMongo - https://api.mongodb.org/python/current/
 * NLTK - http://www.nltk.org/
+* BeautifulSoup - http://www.crummy.com/software/BeautifulSoup/bs4/doc/
 
 ##
 Comando para rodar o script.

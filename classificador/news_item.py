@@ -102,12 +102,12 @@ class NewsItem:
         l = []
         l.append('---')
         #l.append('lookup_key:   %s' % (self.lookup_key()))
-        l.append('category:     %s' % (self.category))
-        l.append('guess:        %s' % (guess))
-        l.append('url:     %s' % (self.url))
-        l.append('title:   %s' % (self.title))
+        l.append('Categoria:     %s' % (self.category))
+        l.append('Palpite:        %s' % (guess))
+        l.append('URL:     %s' % (self.url))
+        l.append('Titulos:   %s' % (self.title))
         l.append('')
-        l.append('all words, by count')
+        l.append('Todas as palavras por contagem')
         freqs = nltk.FreqDist([w.lower() for w in self.all_words])
         for w in freqs.keys():
             l.append("%-20s  %d" % (w, freqs.get(w)))

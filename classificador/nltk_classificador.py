@@ -1,7 +1,15 @@
+#-.- encoding:utf-8 -.-
+import json
 import nltk
+import codecs
 import random
+
 from news_item import NewsItem
 from pymongo import MongoClient
+from nltk.classify import apply_features
+
+DEBUG = True
+
 
 def _load_stop_words():
     stop_words = nltk.corpus.stopwords.words('portuguese')
@@ -22,42 +30,20 @@ class Classificador:
         self.stop_words = _load_stop_words()
         self.classify()
 
-
-        #self.collect_news()
-        #self.top_words = self.identify_top_words()
-        # self.word_set = set(self.all_words)
-        # self.array_de_categorias = self.coletar_categorias_unicas_por_frequencia()
-        #self.training_set()
-
-    def coletar_categorias_unicas_por_frequencia(self):
-        freqs = nltk.FreqDist()
-        sorted_cats = []
-        for item in self.labeled_news:
-            freqs.inc(item[1], 1)
-        for cat in freqs.keys():
-            sorted_cats.append(cat)
-            print("collect_sorted_categories: %s  %d" % (cat, freqs.get(cat)))
-        return sorted_cats
-
-    def identify_top_words(self):
-        freq_dist = nltk.FreqDist(w.lower() for w in self.all_words)
+    def identify_top_words(self, all_words):
+        freq_dist = nltk.FreqDist(w.lower() for w in all_words)
         return list(freq_dist)[:1000]
-
-    def training_set(self):
-        featuresets = list()
-        for i in self.labeled_news:
-            for j in i[0]:
-                featuresets.append((self.word_features(j), i[1]))
-        size = 100  # int(len(featuresets) * 0.1)
-        # print(size)
-        self.train_set, self.test_set = featuresets[size:], featuresets[:size]
-        self.classifier = nltk.NaiveBayesClassifier.train(self.train_set)
 
     def collect_news(self):
         news_list = []
+        contador = 0
         for news in self.news.find():
-            ns = NewsItem(news, self.stop_words)
-            news_list.append(ns)
+            if contador < 10000:
+                ns = NewsItem(news, self.stop_words)
+                news_list.append(ns)
+            else:
+                break
+            contador += 1
         return news_list
 
     def collect_all_words(self, news_list):
@@ -67,65 +53,58 @@ class Classificador:
         return all_words
 
     def classificar(self, word):
-        return self.classifier.classify(self.word_features(word))
-
-    def word_features(self, word):
-        return {"palavra": word}
+        return self.classifier.classify(word)
 
     def features(self, top_words):
+        word_set = set(self.all_words)
         features = {}
-        for w in self.top_words:
-            features["w_%s" % w] = (w in self.word_set)
+        features['url'] = self.url
+        for w in top_words:
+            features["w_%s" % w] = (w in word_set)
         return features
 
     def classify(self):
+        print(u"Coletando as Notícias")
         news_items = self.collect_news()
+
+        print(u"Coletando todas as palavras")
         all_words = self.collect_all_words(news_items)
+
+        print(u"Coletando as principais palavras")
         top_words = self.identify_top_words(all_words)
 
+        print(u"Embaralhando")
         random.shuffle(news_items)
 
+        print(u"Gerando conjunto de treinamento")
         featuresets = []
         for item in news_items:
             item_features = item.features(top_words)
             tup = (item_features, item.category)
             featuresets.append(tup)
 
-        train_set = featuresets
+        train_set = featuresets[1000:]
 
-        print('featuresets count: ' + str(len(featuresets)))
+        #test_set = featuresets[:1000]
 
-        print("training...")
+        print('Featuresets tamanho: ' + str(len(featuresets)))
+
+        print("Treinando...")
         self.classifier = nltk.NaiveBayesClassifier.train(train_set)
-        print("training complete")
+        print("Treinamento Completo complete")
 
+        if DEBUG:
+            arquivo_teste = codecs.open("doc_test_2.json", "r", encoding="utf-8")
+            items_news = json.loads(arquivo_teste.read())
+            list_test = []
+            for item in items_news:
+                news = NewsItem(item, self.stop_words)
+                list_test.append(news)
 
-    def testar(self):
-        print("{} - {}".format("obama", self.classificar("obama")))
-        print("{} - {}".format("dilma", self.classificar("dilma")))
-        print("{} - {}".format("aécio", self.classificar("aécio")))
-        print("{} - {}".format("neves", self.classificar("neves")))
-        print("{} - {}".format("google", self.classificar("google")))
-        print("{} - {}".format("microsoft", self.classificar("microsoft")))
-        print("{} - {}".format("warcraft", self.classificar("warcraft")))
-        print("{} - {}".format("starcraft", self.classificar("starcraft")))
-        print("{} - {}".format("detran", self.classificar("detran")))
-        print("{} - {}".format("fbi", self.classificar("fbi")))
-        print("{} - {}".format("dicraprio", self.classificar("dicaprio")))
-        print("{} - {}".format("leonardo", self.classificar("leonardo")))
-        print("{} - {}".format("marlon", self.classificar("oscar")))
-        print("{} - {}".format("yahoo", self.classificar("yahoo")))
-        print("{} - {}".format("anéis", self.classificar("anéis")))
-        print("{} - {}".format("witcher", self.classificar("witcher")))
-        print("{} - {}".format("stanford", self.classificar("stanford")))
-        print("{} - {}".format("dengue", self.classificar("dengue")))
-        print("{} - {}".format("água", self.classificar("água")))
-        print("{} - {}".format("fome", self.classificar("fome")))
-        print("{} - {}".format("internacional", self.classificar("internacional")))
-        print("{} - {}".format("grêmio", self.classificar("grêmio")))
-
+            for i in list_test:
+                feat = i.features(top_words)
+                print(u"{} - {}".format(i.title, self.classificar(feat)))
+            #print(nltk.classify.accuracy(self.classifier, test_set))
 
 if __name__ == "__main__":
     clas = Classificador()
-    clas.testar()
-    print(nltk.classify.accuracy(clas.classifier, clas.test_set))
