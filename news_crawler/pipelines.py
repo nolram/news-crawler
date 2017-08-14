@@ -15,6 +15,8 @@ class MongoPipeline(object):
         self.collection_name = 'articles'
         self.mongo_uri = mongo_uri
         self.mongo_db = mongo_db
+        self.client = None
+        self.db = None
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -26,7 +28,7 @@ class MongoPipeline(object):
     def open_spider(self, spider):
         self.client = pymongo.MongoClient(self.mongo_uri)
         self.db = self.client[self.mongo_db]
-        #self.db.profiles.create_index([('url', pymongo.ASCENDING)], unique=True)
+        self.db[self.collection_name].create_index([('url', pymongo.ASCENDING)], unique=True)
 
     def close_spider(self, spider):
         self.client.close()
