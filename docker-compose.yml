@@ -28,9 +28,6 @@ services:
             - .:/code:Z
         ports:
             - "6800:6800"
-        links:
-            - mongo
-            - redis:localhost
         depends_on:
             - redis
             - mongo
