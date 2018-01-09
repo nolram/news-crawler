@@ -4,3 +4,5 @@ nltk==3.2.4
 beautifulsoup4==4.6.0
 pymongo==3.5.0
 pybloom-live==2.3.1
+redis==2.10.5
+scrapy-redis==0.6.8

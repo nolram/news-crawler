@@ -1,11 +1,21 @@
 version: '3'
 services:
+    # Mongo
     mongo:
       image: 'mongo:3.4.1'
       ports:
         - '27017:27017'
       volumes:
         - 'mongo:/data/db'
+
+    # Redis
+    redis:
+        container_name: 'redis'
+        image: 'redis'
+        ports:
+            - '6379:6379'
+        volumes:
+            - 'redisdata:/data'
 
     # Django
     web:
@@ -20,7 +30,10 @@ services:
             - "6800:6800"
         links:
             - mongo
+            - redis:localhost
         depends_on:
+            - redis
             - mongo
 volumes:
     mongo:
+    redisdata:
