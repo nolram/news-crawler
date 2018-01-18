@@ -15,7 +15,7 @@ class ArticleSpiderG1(CrawlSpider):
     # "http://g1.globo.com/Noticias/Politica/0,,MUL4109-5601,00-VOTACAO+DO+PAC+NAO+DEVE+ATRASAR+DIZ+CHINAGLIA.html"]
 
     rules = (
-        Rule(LinkExtractor(allow=('(.+).html$', '(.+).ghtml$'), deny=('(.+)(/blog/)', '(.+)(/previsao-do-tempo/)',)),
+        Rule(LinkExtractor(allow=('(.+).html$', '(.+).ghtml$'), deny=('(.+)(/blog/)', '(.+)(/previsao-do-tempo/)', '(extra.+)')),
              callback='parse_item', follow=True,),
     )
 

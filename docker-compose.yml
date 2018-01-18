@@ -15,7 +15,7 @@ services:
         ports:
             - '6379:6379'
         volumes:
-            - 'redisdata:/data'
+            - 'redisdata:/data/redis'
 
     # Django
     web:
